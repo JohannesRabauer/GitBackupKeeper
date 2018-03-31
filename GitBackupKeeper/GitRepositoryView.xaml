@@ -1,0 +1,45 @@
+﻿<UserControl x:Class="GitBackupKeeper.GitRepositoryView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GitBackupKeeper"
+             xmlns:localHelper="clr-namespace:GitBackupKeeper.Helper"
+             mc:Ignorable="d" 
+             d:DesignHeight="40" d:DesignWidth="300">
+    <UserControl.Resources>
+        <localHelper:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Label Grid.Row="0" Grid.Column="0">
+            <Label.Style>
+                <Style TargetType="Label">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Path=isBusy}" Value="True">
+                            <Setter Property="Content" Value="⌛" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Path=isBusy}" Value="False">
+                            <Setter Property="Content" Value="✓" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Label.Style>
+        </Label>
+        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding url, UpdateSourceTrigger=PropertyChanged}" />
+        <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Content="{Binding taskDescription}" />
+        <Button Grid.Row="0" Grid.Column="2" Grid.RowSpan="2" Command="{Binding download}" FontSize="30">⬇</Button>
+        <Button Grid.Row="0" Grid.Column="3" Grid.RowSpan="2" Command="{Binding delete}" Foreground="Red" FontSize="30">-</Button>
+        <ProgressBar Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Value="{Binding progress}" Height="10" IsIndeterminate="{Binding isIndetermerminate}" Visibility="{Binding Path=isBusy, Converter={StaticResource BooleanToVisibilityConverter}}" />
+    </Grid>
+</UserControl>

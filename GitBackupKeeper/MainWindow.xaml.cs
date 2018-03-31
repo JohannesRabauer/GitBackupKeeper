@@ -1,17 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace GitBackupKeeper
 {
@@ -20,9 +8,23 @@ namespace GitBackupKeeper
     /// </summary>
     public partial class MainWindow : Window
     {
+
+        private MainContext _context ;
         public MainWindow()
         {
             InitializeComponent();
+            this._context = new MainContext();
+            this.DataContext = this._context;
+            this.Closing += closing;
+        }
+
+        private void closing(object o , CancelEventArgs args)
+        {
+            if(this._context != null)
+            {
+                this._context.Dispose();
+                this._context = null;
+            }
         }
     }
 }

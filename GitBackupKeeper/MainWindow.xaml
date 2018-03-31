@@ -5,8 +5,17 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GitBackupKeeper"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
-    <Grid>
-        
-    </Grid>
+        Title="Git Backuper" Height="350" Width="525">
+    <StackPanel>
+        <Button Command="{Binding showSettings}">Settings</Button>
+        <Button Command="{Binding addRepository}" Foreground="Green">+</Button>
+        <Button Command="{Binding downloadAllRepositories}">Download all</Button>
+        <ListView HorizontalContentAlignment="Stretch"  Grid.IsSharedSizeScope="True" Margin="3" ItemsSource="{Binding repositories}" >
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <local:GitRepositoryView />
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </StackPanel>
 </Window>
