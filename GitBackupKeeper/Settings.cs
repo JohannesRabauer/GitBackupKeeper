@@ -1,5 +1,6 @@
 ﻿using GitBackupKeeper.Helper;
 using System;
+using System.Windows;
 using System.Xml.Serialization;
 
 namespace GitBackupKeeper
@@ -37,6 +38,7 @@ namespace GitBackupKeeper
         public RelayCommand saveSettings { get; set; }
         [XmlIgnore]
         public RelayCommand cancelSettings { get; set; }
+        private MainContext _context;
 
         public Settings()
         {
@@ -48,12 +50,19 @@ namespace GitBackupKeeper
             this.cancelSettings = new RelayCommand(doCancelSettings);
         }
 
-        private void doSaveSettings()
+        public void init(MainContext context)
         {
+            this._context = context;
         }
 
-        private void doCancelSettings()
+        private void doSaveSettings()
         {
+            this._context.settings = this;
+        }
+
+        private void doCancelSettings(Object windowToClose)
+        {
+            ((Window)windowToClose).Close();
         }
     }
 }

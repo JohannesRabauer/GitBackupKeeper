@@ -18,6 +18,14 @@ namespace GitBackupKeeper
             {
                 _settings = value;
                 base.OnPropertyChanged("settings");
+                _settings.init(this);
+                if(this._respositories != null)
+                {
+                    foreach (GitRepository repo in this._respositories)
+                    {
+                        repo.init(this, this._settings);
+                    }
+                }
             }
         }
 
@@ -62,7 +70,9 @@ namespace GitBackupKeeper
 
         private void doShowSettings()
         {
-            new WindowService().showWindow(settings);
+            Settings tempSettings = deserializeFromString<Settings>(serializeObject(this._settings));
+            tempSettings.init(this);
+            new WindowService().showWindow("Settings",tempSettings);
         }
 
         private void doDownloadAllRepositories()
