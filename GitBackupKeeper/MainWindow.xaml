@@ -6,16 +6,30 @@
         xmlns:local="clr-namespace:GitBackupKeeper"
         mc:Ignorable="d"
         Title="Git Backuper" Height="350" Width="525">
-    <StackPanel>
-        <Button Command="{Binding showSettings}">Settings</Button>
-        <Button Command="{Binding addRepository}" Foreground="Green">+</Button>
-        <Button Command="{Binding downloadAllRepositories}">Download all</Button>
-        <ListView HorizontalContentAlignment="Stretch"  Grid.IsSharedSizeScope="True" Margin="3" ItemsSource="{Binding repositories}" >
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <local:GitRepositoryView />
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
-    </StackPanel>
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_Settings" Command="{Binding showSettings}" />
+        </Menu>
+        <Grid DockPanel.Dock="Top" Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <ListView Grid.Row="0" HorizontalContentAlignment="Stretch"  Grid.IsSharedSizeScope="True" Margin="3" ItemsSource="{Binding repositories}" >
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <local:GitRepositoryView />
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <Button Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="30" Height="30" Margin="10" Command="{Binding addRepository}" Foreground="Green">+</Button>
+            <Grid Grid.Row="1" Height="30" Margin="0 10 0 0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="100" />
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="2" Command="{Binding downloadAllRepositories}">Download all</Button>
+            </Grid>
+        </Grid>
+    </DockPanel>
 </Window>
