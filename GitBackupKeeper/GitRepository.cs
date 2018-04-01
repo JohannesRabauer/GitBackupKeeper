@@ -3,6 +3,7 @@ using LibGit2Sharp;
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Windows;
 using System.Xml.Serialization;
 
 namespace GitBackupKeeper
@@ -153,7 +154,9 @@ namespace GitBackupKeeper
 
         private void doDelete()
         {
-            this._context.deleteRepository(this);
+            MessageBoxResult messageBoxResult = System.Windows.MessageBox.Show("Are you sure?", "Delete Confirmation", System.Windows.MessageBoxButton.YesNo);
+            if (messageBoxResult == MessageBoxResult.Yes)
+                this._context.deleteRepository(this);
         }
     }
 }

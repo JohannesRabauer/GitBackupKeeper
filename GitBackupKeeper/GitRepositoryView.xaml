@@ -6,9 +6,10 @@
              xmlns:local="clr-namespace:GitBackupKeeper"
              xmlns:localHelper="clr-namespace:GitBackupKeeper.Helper"
              mc:Ignorable="d" 
-             d:DesignHeight="40" d:DesignWidth="300">
+             d:DesignHeight="60" d:DesignWidth="300">
     <UserControl.Resources>
         <localHelper:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <localHelper:BooleanInverterConverter x:Key="BooleanInverterConverter" />
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -36,10 +37,10 @@
                 </Style>
             </Label.Style>
         </Label>
-        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding url, UpdateSourceTrigger=PropertyChanged}" />
+        <TextBox Grid.Row="0" Grid.Column="1" IsEnabled="{Binding isBusy, Converter={StaticResource BooleanInverterConverter}}" Text="{Binding url, UpdateSourceTrigger=PropertyChanged}" />
         <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Content="{Binding taskDescription}" />
-        <Button Grid.Row="0" Grid.Column="2" Grid.RowSpan="2" Command="{Binding download}" FontSize="30">⬇</Button>
-        <Button Grid.Row="0" Grid.Column="3" Grid.RowSpan="2" Command="{Binding delete}" Foreground="Red" FontSize="30">-</Button>
-        <ProgressBar Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Value="{Binding progress}" Height="10" IsIndeterminate="{Binding isIndetermerminate}" Visibility="{Binding Path=isBusy, Converter={StaticResource BooleanToVisibilityConverter}}" />
+        <Button Grid.Row="0" Grid.Column="2" IsEnabled="{Binding isBusy, Converter={StaticResource BooleanInverterConverter}}" Grid.RowSpan="2" Command="{Binding download}" FontSize="20" Width="30" Height="30" Margin="5" Padding="-10">⬇</Button>
+        <Button Grid.Row="0" Grid.Column="3" IsEnabled="{Binding isBusy, Converter={StaticResource BooleanInverterConverter}}" Grid.RowSpan="2" Command="{Binding delete}" Foreground="Red" Width="30" Height="30" Margin="5" Padding="-20" FontSize="30">-</Button>
+        <ProgressBar Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4" Value="{Binding progress}" Height="10" IsIndeterminate="{Binding isIndetermerminate}" Visibility="{Binding Path=isBusy, Converter={StaticResource BooleanToVisibilityConverter}}" />
     </Grid>
 </UserControl>

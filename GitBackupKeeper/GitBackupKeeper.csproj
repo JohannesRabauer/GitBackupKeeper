@@ -66,6 +66,7 @@
     <Compile Include="GitRepositoryView.xaml.cs">
       <DependentUpon>GitRepositoryView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Helper\BooleanInverterConverter.cs" />
     <Compile Include="Helper\BooleanToVisibilityConverter.cs" />
     <Compile Include="Helper\WindowService.cs" />
     <Compile Include="MainContext.cs" />
