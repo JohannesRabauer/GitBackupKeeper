@@ -2,6 +2,7 @@
 using LibGit2Sharp;
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Xml.Serialization;
@@ -57,6 +58,12 @@ namespace GitBackupKeeper
         public RelayCommand delete { get; set; }
         private MainContext _context;
         private Settings _settings;
+        public Settings settings
+        {
+            get { return this._settings; }
+        }
+        private GitHandler _gitHandler;
+        private ZipHandler _zipHandler;
 
         public GitRepository() : this("")
         {
@@ -71,6 +78,8 @@ namespace GitBackupKeeper
             this.taskDescription = "";
             this.progress = 0;
             this.isIndetermerminate = false;
+            this._gitHandler = new GitHandler(this);
+            this._zipHandler = new ZipHandler(this);
         }
 
         public void init(MainContext context, Settings settings)
@@ -85,71 +94,27 @@ namespace GitBackupKeeper
             {
                 this.isBusy = true;
                 this.progress = 0;
+                if (!this._zipHandler.checkAndExecuteUnzipping()) return;
                 if (System.IO.Directory.Exists(getLocalPath()))
                 {
-                    reset();
-                    pull();
+                    this._gitHandler.reset();
+                    this._gitHandler.pull();
                 }
                 else
                 {
-                    clone();
+                    this._gitHandler.clone();
                 }
+                if (!this._zipHandler.checkAndExecuteZipping()) return;
                 this.taskDescription = "Done";
                 this.isBusy = false;
                 this.isIndetermerminate = false;
             });
         }
 
-        private void clone()
+        public String getLocalPath()
         {
-            this.taskDescription = "Cloning repository...";
-            this.isIndetermerminate = true;
-            var co = new CloneOptions();
-            co.CredentialsProvider = myCredentialsProvider;
-            co.OnCheckoutProgress = checkoutHandler;
-            Repository.Clone(this._url, getLocalPath(), co);
-        }
-
-        private void reset()
-        {
-            this.isIndetermerminate = true;
-            this.taskDescription = "Resetting local repository...";
-            using (Repository repo = new Repository(getLocalPath()))
-            {
-                Commit currentCommit = repo.Head.Tip;
-                repo.Reset(ResetMode.Hard, currentCommit);
-            }
-        }
-
-        private void pull()
-        {
-            this.isIndetermerminate = true;
-            this.taskDescription = "Pulling changes...";
-            PullOptions options = new PullOptions();
-            options.FetchOptions = new FetchOptions();
-            options.FetchOptions.CredentialsProvider = myCredentialsProvider;
-            options.FetchOptions.TagFetchMode = TagFetchMode.All;
-            using (Repository repo = new Repository(getLocalPath()))
-            {
-                Commands.Pull(repo, new Signature("test", "test", new DateTimeOffset()), options);
-            }
-        }
-
-        private Credentials myCredentialsProvider(string url, string username, SupportedCredentialTypes types)
-        {
-            return new UsernamePasswordCredentials { Username = this._settings.username, Password = this._settings.password };
-        }
-
-        private void checkoutHandler(String path, int completedSteps, int totalSteps)
-        {
-            this.isIndetermerminate = false;
-            this.progress = 100.0 / totalSteps * completedSteps;
-            this.taskDescription = "Cloning repository (" + completedSteps + "/" + totalSteps + ")...";
-        }
-
-        private String getLocalPath()
-        {
-            return System.IO.Path.Combine(this._settings.destinationPath, this._url.Split('/').Last().Split('.').First());
+            String localPath = System.IO.Path.Combine(this._settings.destinationPath, this._url.Split('/').Last().Split('.').First());
+            return localPath;
         }
 
         private void doDelete()
