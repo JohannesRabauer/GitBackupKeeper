@@ -18,6 +18,7 @@ namespace GitBackupKeeper
             var co = new CloneOptions();
             co.CredentialsProvider = myCredentialsProvider;
             co.OnCheckoutProgress = checkoutHandler;
+            co.OnProgress = progressHandler;
             co.RecurseSubmodules = true;
             Repository.Clone(this._repo.url, this._repo.getLocalPath(), co);
         }
@@ -56,6 +57,11 @@ namespace GitBackupKeeper
             this._repo.isIndetermerminate = false;
             this._repo.progress = 100.0 / totalSteps * completedSteps;
             this._repo.taskDescription = "Cloning repository (" + completedSteps + "/" + totalSteps + ")...";
+        }
+        private bool progressHandler(String message)
+        {
+            this._repo.taskDescription = message;
+            return true;
         }
     }
 }
