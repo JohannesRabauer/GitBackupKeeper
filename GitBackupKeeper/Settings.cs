@@ -1,6 +1,9 @@
 ﻿using GitBackupKeeper.Helper;
 using System;
+using System.Security.Cryptography;
+using System.Text;
 using System.Windows;
+using System.Windows.Controls;
 using System.Xml.Serialization;
 
 namespace GitBackupKeeper
@@ -27,11 +30,19 @@ namespace GitBackupKeeper
             set { _username = value; OnPropertyChanged("username"); }
         }
 
-        private String _password;
-        public String password
+        [XmlIgnore]
+        public String password { get; set; }
+        public String encryptedPassword
         {
-            get { return _password; }
-            set { _password = value; OnPropertyChanged("password"); }
+            get { return encrypt(this.password); }
+            set { this.password = decrypt(value); }
+        }
+
+        private bool _zipping;
+        public bool zipping
+        {
+            get { return _zipping; }
+            set { _zipping = value; OnPropertyChanged("zipping"); }
         }
 
         [XmlIgnore]
@@ -48,6 +59,7 @@ namespace GitBackupKeeper
             this.destinationPath = System.IO.Directory.GetCurrentDirectory() + "\\repos";
             this.saveSettings = new RelayCommand(doSaveSettings);
             this.cancelSettings = new RelayCommand(doCancelSettings);
+            this.zipping = false;
         }
 
         public void init(MainContext context)
@@ -55,14 +67,25 @@ namespace GitBackupKeeper
             this._context = context;
         }
 
-        private void doSaveSettings()
+        private void doSaveSettings(Object passwordBox)
         {
+            this.password = ((PasswordBox)passwordBox).Password;
             this._context.settings = this;
         }
 
         private void doCancelSettings(Object windowToClose)
         {
             ((Window)windowToClose).Close();
+        }
+
+        public string encrypt(string text)
+        {
+            return Convert.ToBase64String(ProtectedData.Protect(Encoding.Unicode.GetBytes(text), null, DataProtectionScope.CurrentUser));
+        }
+
+        public string decrypt(string text)
+        {
+            return Encoding.Unicode.GetString(ProtectedData.Unprotect(Convert.FromBase64String(text),null,DataProtectionScope.CurrentUser));
         }
     }
 }
