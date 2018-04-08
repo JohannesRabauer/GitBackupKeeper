@@ -66,10 +66,9 @@ namespace GitBackupKeeper
             Directory.Delete(dirToDelete, false);
             return true;
         }
-        
         private String getLocalZipPath()
         {
-            return this._repo.getLocalPath() + ".zip";
+            return this._repo.getLocalZipPath();
         }
     }
 }

@@ -64,6 +64,7 @@ namespace GitBackupKeeper
         }
         private GitHandler _gitHandler;
         private ZipHandler _zipHandler;
+        private WebDavHandler _webDavHandler;
 
         public GitRepository() : this("")
         {
@@ -80,6 +81,7 @@ namespace GitBackupKeeper
             this.isIndetermerminate = false;
             this._gitHandler = new GitHandler(this);
             this._zipHandler = new ZipHandler(this);
+            this._webDavHandler = new WebDavHandler(this);
         }
 
         public void init(MainContext context, Settings settings)
@@ -105,6 +107,7 @@ namespace GitBackupKeeper
                     this._gitHandler.clone();
                 }
                 if (!this._zipHandler.checkAndExecuteZipping()) return;
+                this._webDavHandler.updloadIfChecked();
                 this.taskDescription = "Done";
                 this.isBusy = false;
                 this.isIndetermerminate = false;
@@ -115,6 +118,11 @@ namespace GitBackupKeeper
         {
             String localPath = System.IO.Path.Combine(this._settings.destinationPath, this._url.Split('/').Last().Split('.').First());
             return localPath;
+        }
+
+                public String getLocalZipPath()
+        {
+            return getLocalPath() + ".zip";
         }
 
         private void doDelete()
