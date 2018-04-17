@@ -114,11 +114,15 @@ namespace GitBackupKeeper
             this._context = context;
         }
 
-        private void doSaveSettings(Object passwordBox)
-        {
-            this.password = ((PasswordBox)passwordBox).Password;
-            this._context.settings = this;
-        }
+    private void doSaveSettings(Object passwords)
+    {
+      Object[] passwordsAsArray = (Object[])passwords;
+      String password = ((PasswordBox)passwordsAsArray[0]).Password;
+      if(!String.IsNullOrEmpty(password ))  this.password = password;
+      String webDavPassword = ((PasswordBox)passwordsAsArray[1]).Password;
+      if (!String.IsNullOrEmpty(webDavPassword)) this.webDavPassword = webDavPassword;
+      this._context.settings = this;
+    }
 
         private void doCancelSettings(Object windowToClose)
         {
