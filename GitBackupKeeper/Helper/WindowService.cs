@@ -12,10 +12,9 @@ namespace GitBackupKeeper.Helper
             win.Owner = Application.Current.Windows.OfType<Window>().SingleOrDefault(x => x.IsActive);
             win.Content = viewModel;
             win.Title = title;
-            win.Height = 350;
-            win.Width = 350;
+            win.Height = 400;
+            win.Width = 450;
             win.Show();
-
         }
     }
 }

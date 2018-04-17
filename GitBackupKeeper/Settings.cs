@@ -85,10 +85,25 @@ namespace GitBackupKeeper
             get { return webDavServerUrl + webDavBasePath; }
         }
 
+        private bool _encryptZipFile;
+        public bool encryptZipFile
+        {
+            get { return _encryptZipFile; }
+            set { _encryptZipFile = value; OnPropertyChanged("encryptZipFile"); }
+        }
+        private String _encryptionPassword;
+        public String encryptionPassword
+        {
+            get { return _encryptionPassword; }
+            set { _encryptionPassword = value; OnPropertyChanged("encryptionPassword"); }
+        }
+
         [XmlIgnore]
         public RelayCommand saveSettings { get; set; }
         [XmlIgnore]
         public RelayCommand cancelSettings { get; set; }
+        [XmlIgnore]
+        public RelayCommand generateZipPassword { get; set; }
         private MainContext _context;
 
         public Settings()
@@ -97,6 +112,7 @@ namespace GitBackupKeeper
             this.destinationPath = System.IO.Directory.GetCurrentDirectory() + "\\repos";
             this.saveSettings = new RelayCommand(doSaveSettings);
             this.cancelSettings = new RelayCommand(doCancelSettings);
+            this.generateZipPassword = new RelayCommand(doGenerateZipPassword);
             this.zipping = false;
             this.useWebDav = false;
             this.webDavServerUrl = "https://myowncloud.com/";
@@ -107,6 +123,8 @@ namespace GitBackupKeeper
             this._webDavUsername = "";
             this.password = "";
             this.webDavPassword = "";
+            this._encryptZipFile = false;
+            doGenerateZipPassword();
         }
 
         public void init(MainContext context)
@@ -123,6 +141,11 @@ namespace GitBackupKeeper
         private void doCancelSettings(Object windowToClose)
         {
             ((Window)windowToClose).Close();
+        }
+
+        private void doGenerateZipPassword()
+        {
+            this.encryptionPassword = System.Web.Security.Membership.GeneratePassword(40, 20);
         }
 
         public string encrypt(string text)
