@@ -69,8 +69,8 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="WebDAVClient, Version=1.1.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\WebDAVClient.1.1.3\lib\net45\WebDAVClient.dll</HintPath>
+    <Reference Include="WebDav.Client, Version=2.1.0.0, Culture=neutral, PublicKeyToken=daed9acc7deb9472, processorArchitecture=MSIL">
+      <HintPath>..\packages\WebDav.Client.2.1.0\lib\net45\WebDav.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="WindowsBase" />
@@ -82,6 +82,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Helper\MultiValueConverter.cs" />
     <Compile Include="WebDavHandler.cs" />
     <Compile Include="GitHandler.cs" />
     <Compile Include="GitRepository.cs" />
