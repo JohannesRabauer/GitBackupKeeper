@@ -1,7 +1,7 @@
 ﻿using LibGit2Sharp;
 using System;
 
-namespace GitBackupKeeper
+namespace GitBackupKeeper.Handler
 {
     class GitHandler
     {

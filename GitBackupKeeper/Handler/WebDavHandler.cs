@@ -3,7 +3,7 @@ using System.IO;
 using System.Net;
 using WebDav;
 
-namespace GitBackupKeeper
+namespace GitBackupKeeper.Handler
 {
   class WebDavHandler
   {

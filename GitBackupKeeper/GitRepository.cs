@@ -1,8 +1,6 @@
-﻿using GitBackupKeeper.Helper;
-using LibGit2Sharp;
+﻿using GitBackupKeeper.Handler;
+using GitBackupKeeper.Helper;
 using System;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Xml.Serialization;
