@@ -20,6 +20,9 @@ namespace GitBackupKeeper.Handler
             co.OnCheckoutProgress = checkoutHandler;
             co.OnProgress = progressHandler;
             co.RecurseSubmodules = true;
+            co.IsBare = false;
+            co.Checkout = true;
+            co.OnTransferProgress = transferHandler;
             Repository.Clone(this._repo.url, this._repo.getLocalPath(), co);
         }
 
@@ -51,14 +54,21 @@ namespace GitBackupKeeper.Handler
         private Credentials myCredentialsProvider(string url, string username, SupportedCredentialTypes types)
         {
             return new UsernamePasswordCredentials { Username = this._repo.settings.username, Password = this._repo.settings.password };
-        }
-        private void checkoutHandler(String path, int completedSteps, int totalSteps)
-        {
-            this._repo.isIndetermerminate = false;
-            this._repo.progress = 100.0 / totalSteps * completedSteps;
-            this._repo.taskDescription = "Cloning repository (" + completedSteps + "/" + totalSteps + ")...";
-        }
-        private bool progressHandler(String message)
+    }
+    private bool transferHandler(TransferProgress progress)
+    {
+      this._repo.isIndetermerminate = false;
+      this._repo.progress = 100.0 / progress.TotalObjects * progress.ReceivedObjects;
+      this._repo.taskDescription = "Cloning repository " + progress.ReceivedObjects + "/" + progress.TotalObjects + " (Received:" + progress.ReceivedBytes/1024+"KB)...";
+      return true;
+    }
+    private void checkoutHandler(String path, int completedSteps, int totalSteps)
+    {
+      this._repo.isIndetermerminate = false;
+      this._repo.progress = 100.0 / totalSteps * completedSteps;
+      this._repo.taskDescription = "Cloning repository (" + completedSteps + "/" + totalSteps + ")...\nFile:" + path;
+    }
+    private bool progressHandler(String message)
         {
             this._repo.taskDescription = message;
             return true;
