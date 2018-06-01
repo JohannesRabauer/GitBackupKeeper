@@ -11,7 +11,7 @@
         <localHelper:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <localHelper:BooleanInverterConverter x:Key="BooleanInverterConverter" />
     </UserControl.Resources>
-    <Grid>
+    <Grid Margin="0 5 0 5">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
@@ -27,11 +27,18 @@
             <Label.Style>
                 <Style TargetType="Label">
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding Path=isBusy}" Value="True">
+                        <DataTrigger Binding="{Binding Path=state}" Value="Busy">
                             <Setter Property="Content" Value="⌛" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Path=isBusy}" Value="False">
+                        <DataTrigger Binding="{Binding Path=state}" Value="Done">
                             <Setter Property="Content" Value="✓" />
+                        </DataTrigger> 
+                        <DataTrigger Binding="{Binding Path=state}" Value="">
+                            <Setter Property="Content" Value="" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Path=state}" Value="Error">
+                            <Setter Property="Content" Value="!" />
+                            <Setter Property="FontWeight" Value="UltraBold" />
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>

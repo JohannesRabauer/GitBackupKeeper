@@ -24,6 +24,13 @@ namespace GitBackupKeeper
             get { return _isBusy; }
             set { _isBusy = value; OnPropertyChanged("isBusy"); }
         }
+        private String _state;
+        [XmlIgnore]
+        public String state
+        {
+            get { return _state; }
+            set { _state = value; OnPropertyChanged("state"); }
+        }
         private Boolean _isIndetermerminate;
         [XmlIgnore]
         public Boolean isIndetermerminate
@@ -86,13 +93,26 @@ namespace GitBackupKeeper
         {
             this._context = context;
             this._settings = settings;
+            this.state = "";
+        }
+
+        public void showError(String message)
+        {
+            this.taskDescription = message;
+            this.isBusy = false;
+            this.state = "Error";
+            this.progress = 0;
         }
 
         public void doDownload()
         {
+            this.state = "Starting";
             System.Threading.Tasks.Task.Factory.StartNew(() =>
             {
+                try
+                {
                 this.isBusy = true;
+                this.state = "Busy";
                 this.progress = 0;
                 if (!this._zipHandler.checkAndExecuteUnzipping()) return;
                 if (System.IO.Directory.Exists(getLocalPath()))
@@ -107,8 +127,14 @@ namespace GitBackupKeeper
                 if (!this._zipHandler.checkAndExecuteZipping()) return;
                 this._webDavHandler.updloadIfChecked();
                 this.taskDescription = "Done";
+                this.state = "Done";
                 this.isBusy = false;
                 this.isIndetermerminate = false;
+                }
+                catch (Exception ex)
+                {
+                    this.showError(ex.Message);
+                }
             });
         }
 

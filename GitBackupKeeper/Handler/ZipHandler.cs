@@ -3,91 +3,108 @@ using System.IO;
 
 namespace GitBackupKeeper.Handler
 {
-  class ZipHandler
-  {
-
-    private GitRepository _repo;
-
-    public ZipHandler(GitRepository repo)
+    class ZipHandler
     {
-      this._repo = repo;
-    }
 
-    public bool checkAndExecuteUnzipping()
-    {
-      if (!this._repo.settings.zipping) return true;
-      if (System.IO.Directory.Exists(this._repo.getLocalPath()))
-        deleteSurely(this._repo.getLocalPath());
-      if (!System.IO.File.Exists(getLocalZipPath())) return true;
-      unzip(getLocalZipPath(), this._repo.getLocalPath());
-      System.IO.File.Delete(getLocalZipPath());
-      return true;
-    }
+        private GitRepository _repo;
 
-    public bool checkAndExecuteZipping()
-    {
-      if (!this._repo.settings.zipping) return true;
-      if (System.IO.File.Exists(getLocalZipPath()))
-        System.IO.File.Delete(getLocalZipPath());
-      if (!System.IO.Directory.Exists(this._repo.getLocalPath())) return false;
-      zip(this._repo.getLocalPath(), getLocalZipPath());
-      deleteSurely(this._repo.getLocalPath());
-      return true;
-    }
-
-    private void unzip(String sourceArchive, String destinationDirectory)
-    {
-      this._repo.taskDescription = "Unzipping directory...";
-      this._repo.isIndetermerminate = true;
-      using (Ionic.Zip.ZipFile zip = Ionic.Zip.ZipFile.Read(sourceArchive))
-      {
-        if (this._repo.settings.encryptZipFile)
+        public ZipHandler(GitRepository repo)
         {
-          zip.Password = this._repo.settings.encryptionPassword;
-          zip.Encryption = Ionic.Zip.EncryptionAlgorithm.WinZipAes256;
+            this._repo = repo;
         }
-        foreach (Ionic.Zip.ZipEntry e in zip)
-        {
-          e.Extract(destinationDirectory);
-        }
-      }
-    }
 
-    private void zip(String sourceDirectory, String destinationZipFile)
-    {
-      this._repo.taskDescription = "Zipping directory...";
-      this._repo.isIndetermerminate = true;
-      using (Ionic.Zip.ZipFile zip = new Ionic.Zip.ZipFile())
-      {
-        if (this._repo.settings.encryptZipFile)
+        public bool checkAndExecuteUnzipping()
         {
-          zip.Password = this._repo.settings.encryptionPassword;
-          zip.Encryption = Ionic.Zip.EncryptionAlgorithm.WinZipAes256;
+            if (!this._repo.settings.zipping) return true;
+            if (System.IO.Directory.Exists(this._repo.getLocalPath()))
+                deleteSurely(this._repo.getLocalPath());
+            if (!System.IO.File.Exists(getLocalZipPath())) return true;
+            unzip(getLocalZipPath(), this._repo.getLocalPath());
+            System.IO.File.Delete(getLocalZipPath());
+            return true;
         }
-        zip.AddDirectory(sourceDirectory);
-        zip.Save(destinationZipFile);
-      }
-    }
 
-    private bool deleteSurely(String dirToDelete)
-    {
-      string[] files = Directory.GetFiles(dirToDelete);
-      string[] dirs = Directory.GetDirectories(dirToDelete);
-      foreach (string file in files)
-      {
-        File.SetAttributes(file, FileAttributes.Normal);
-        File.Delete(file);
-      }
-      foreach (string dir in dirs)
-      {
-        deleteSurely(dir);
-      }
-      Directory.Delete(dirToDelete, false);
-      return true;
+        public bool checkAndExecuteZipping()
+        {
+            if (!this._repo.settings.zipping) return true;
+            if (System.IO.File.Exists(getLocalZipPath()))
+                System.IO.File.Delete(getLocalZipPath());
+            if (!System.IO.Directory.Exists(this._repo.getLocalPath())) return false;
+            zip(this._repo.getLocalPath(), getLocalZipPath());
+            deleteSurely(this._repo.getLocalPath());
+            return true;
+        }
+
+        private void unzip(String sourceArchive, String destinationDirectory)
+        {
+            if (Directory.Exists(destinationDirectory))
+            {
+                this._repo.taskDescription = "Deleting existing directory...";
+                try
+                {
+                    Directory.Delete(destinationDirectory, true);
+                }
+                catch (Exception)
+                {
+                    this._repo.showError("Could not delete already existing directory!");
+                    return;
+                }
+            }
+            this._repo.taskDescription = "Unzipping directory...";
+            this._repo.isIndetermerminate = true;
+            using (Ionic.Zip.ZipFile zip = Ionic.Zip.ZipFile.Read(sourceArchive))
+            {
+                if (this._repo.settings.encryptZipFile)
+                {
+                    zip.Password = this._repo.settings.encryptionPassword;
+                    zip.Encryption = Ionic.Zip.EncryptionAlgorithm.WinZipAes256;
+                }
+                int i = 0;
+                int zipFileCount = zip.Count;
+                foreach (Ionic.Zip.ZipEntry e in zip)
+                {
+                    this._repo.taskDescription = "Unzipping directory (" + i + 1 + "/" + zipFileCount + "...\nFile:" + e.FileName;
+                    this._repo.progress = 100.0 / zipFileCount * (i + 1);
+                    i++;
+                }
+            }
+        }
+
+        private void zip(String sourceDirectory, String destinationZipFile)
+        {
+            this._repo.taskDescription = "Zipping directory...";
+            this._repo.isIndetermerminate = true;
+            using (Ionic.Zip.ZipFile zip = new Ionic.Zip.ZipFile())
+            {
+                if (this._repo.settings.encryptZipFile)
+                {
+                    zip.Password = this._repo.settings.encryptionPassword;
+                    zip.Encryption = Ionic.Zip.EncryptionAlgorithm.WinZipAes256;
+                }
+                zip.AddDirectory(sourceDirectory);
+                zip.Save(destinationZipFile);
+            }
+        }
+
+        private bool deleteSurely(String dirToDelete)
+        {
+            string[] files = Directory.GetFiles(dirToDelete);
+            string[] dirs = Directory.GetDirectories(dirToDelete);
+            foreach (string file in files)
+            {
+                File.SetAttributes(file, FileAttributes.Normal);
+                File.Delete(file);
+            }
+            foreach (string dir in dirs)
+            {
+                deleteSurely(dir);
+            }
+            Directory.Delete(dirToDelete, false);
+            return true;
+        }
+        private String getLocalZipPath()
+        {
+            return this._repo.getLocalZipPath();
+        }
     }
-    private String getLocalZipPath()
-    {
-      return this._repo.getLocalZipPath();
-    }
-  }
 }
